@@ -73,16 +73,25 @@ const menu = [
     img: "./images/item-9.jpeg",
     desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
   },
+  {
+    id: 10,
+    title: "steak dinner",
+    category: "dinner",
+    price: 39.99,
+    img: "./images/item-10.jpeg",
+    desc: `Lorem, ipsum dolor sit amet consectetur adipisicing elit. Libero vel ab necessitatibus unde quasi excepturi dolorum corporis est exercitationem cum!`,
+  },
 ];
 
 // Elements
 const sectionCenter = document.querySelector(".section-center");
-const filterBtns = document.querySelectorAll(".filter-btn");
+const btnContainer = document.querySelector(".btn-container");
 
 // Functions
 const displayMenuItems = function (menuItems) {
-  let displayMenu = menuItems.map((item) => {
-    return `
+  const displayMenu = menuItems
+    .map((item) => {
+      return `
     <article class="menu-item">
       <img src=${item.img} alt=${item.title} class="photo" />
       <div class="item-info">
@@ -96,29 +105,51 @@ const displayMenuItems = function (menuItems) {
       </div>
     </article>
     `;
-  });
-  displayMenu = displayMenu.join("");
+    })
+    .join("");
   sectionCenter.innerHTML = displayMenu;
 };
 
-// Event handlers:
+const displayMenuBtns = function () {
+  const categories = menu.reduce(
+    (acc, item) => {
+      if (!acc.includes(item.category)) {
+        acc.push(item.category);
+      }
+      return acc;
+    },
+    ["all"]
+  );
 
-// Load items
+  const categoryBtns = categories
+    .map((category) => {
+      return `
+      <button class="filter-btn" type="button" data-id=${category}>${category}</button>
+    `;
+    })
+    .join("");
+  btnContainer.innerHTML = categoryBtns;
+  const filterBtns = btnContainer.querySelectorAll(".filter-btn");
+
+  // Filter items
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const category = e.target.dataset.id;
+      const menuCategories = menu.filter((menuItem) => {
+        return menuItem.category === category;
+      });
+      if (category === "all") {
+        displayMenuItems(menu);
+      } else {
+        displayMenuItems(menuCategories);
+      }
+    });
+  });
+};
+
+// Event handler/s:
+// Load items && buttons
 window.addEventListener("DOMContentLoaded", () => {
   displayMenuItems(menu);
-});
-
-// Filter items
-filterBtns.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    const category = e.target.dataset.id;
-    const menuCategories = menu.filter((menuItem) => {
-      return menuItem.category === category;
-    });
-    if (category === "all") {
-      displayMenuItems(menu);
-    } else {
-      displayMenuItems(menuCategories);
-    }
-  });
+  displayMenuBtns();
 });
